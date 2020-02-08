@@ -45,7 +45,7 @@ public class FileController {
    * @return
    */
     @PostMapping("/uploadFileByAccount")
-    public UploadFileResponse uploadFileByAccount(@RequestParam("file") MultipartFile file,@RequestParam("account") int userAccount) {
+    public UploadFileResponse uploadFileByAccount(@RequestParam("file") MultipartFile file,@RequestParam("account") String userAccount) {
         System.out.println("account: "+userAccount);
         String fileName = fileStorageService.uploadHeadIcon(file,userAccount);
         System.out.println("fileName" + fileName + "=========");

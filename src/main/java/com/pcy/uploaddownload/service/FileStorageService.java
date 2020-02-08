@@ -45,8 +45,11 @@ public class FileStorageService {
    * @param account 用户账号
    * @return
    */
-  public String uploadHeadIcon(MultipartFile file,int account) {
+  public String uploadHeadIcon(MultipartFile file,String account) {
     String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    System.out.println(fileName);
+    String[] temp = fileName.split("\\.");
+    fileName = account + "." + temp[1];
     try {
       if(fileName.contains("..")) {
         throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
