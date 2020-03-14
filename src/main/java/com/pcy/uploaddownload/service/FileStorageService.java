@@ -27,6 +27,7 @@ public class FileStorageService {
 
   public static final String USER = "user";
   public static final String HEAD_ICON = "headicon";
+  public static final String COMPLAINT = "complaint";
 
   @Autowired
   public FileStorageService(FileStorageProperties fileStorageProperties) {
@@ -47,9 +48,6 @@ public class FileStorageService {
    */
   public String uploadHeadIcon(MultipartFile file,String account) {
     String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-//    System.out.println(fileName);
-//    String[] temp = fileName.split("\\.");
-//    fileName = account + "." + temp[1];
     try {
       if(fileName.contains("..")) {
         throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
@@ -61,7 +59,25 @@ public class FileStorageService {
       Path targetLocation = fileStorageLocation.resolve(fileName);
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
       String location = targetLocation.toString();
-      System.out.println(location);
+      return location.substring("/usr/nginx/huangshan".length());
+    } catch (Exception ex) {
+      throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+    }
+  }
+
+  public String uploadComplaintEvidence(MultipartFile file,String account){
+    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    try {
+      if(fileName.contains("..")) {
+        throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+      }
+      Path fileStorageLocation = Paths.get(this.fileStorageProperties.getUploadDir() + File.separator + USER + File.separator + account + File.separator + COMPLAINT).toAbsolutePath().normalize();
+      if (Files.notExists(fileStorageLocation)) {
+        Files.createDirectories(fileStorageLocation);
+      }
+      Path targetLocation = fileStorageLocation.resolve(fileName);
+      Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+      String location = targetLocation.toString();
       return location.substring("/usr/nginx/huangshan".length());
     } catch (Exception ex) {
       throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
