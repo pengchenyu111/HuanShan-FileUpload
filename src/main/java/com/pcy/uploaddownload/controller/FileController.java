@@ -46,13 +46,26 @@ public class FileController {
    */
     @PostMapping("/uploadFileByAccount")
     public UploadFileResponse uploadFileByAccount(@RequestParam("file") MultipartFile file,@RequestParam("account") String userAccount) {
-        System.out.println("account: "+userAccount);
         String fileName = fileStorageService.uploadHeadIcon(file,userAccount);
-        System.out.println("fileName" + fileName + "=========");
         String fileDownloadUri = fileStorageProperties.getIpAddress() + fileName;
         String name = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
         return new UploadFileResponse(name.substring(name.indexOf('-') + 1), fileDownloadUri, file.getContentType(), file.getSize());
     }
+
+  /**
+   * 上传投诉凭据
+   * @param file
+   * @param userAccount
+   * @return
+   */
+  @PostMapping("/uploadComplaintEvidence")
+    public UploadFileResponse uploadComplaintEvidence(@RequestParam("file") MultipartFile file,@RequestParam("account") String userAccount) {
+    String fileName = fileStorageService.uploadComplaintEvidence(file,userAccount);
+    String fileDownloadUri = fileStorageProperties.getIpAddress() + fileName;
+    String name = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
+    return new UploadFileResponse(name.substring(name.indexOf('-') + 1), fileDownloadUri, file.getContentType(), file.getSize());
+  }
+
     
     @PostMapping("/uploadFile")
   public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
