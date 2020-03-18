@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 @Service
@@ -82,6 +83,42 @@ public class FileStorageService {
     } catch (Exception ex) {
       throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
     }
+  }
+
+  public String uploadTypeIdTypeFile(MultipartFile file, String type1, String id1, String type2){
+    String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    try {
+      if(fileName.contains("..")) {
+        throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+      }
+      Path fileStorageLocation = Paths.get(this.fileStorageProperties.getUploadDir() + File.separator + type1 + File.separator + id1 + File.separator + type2).toAbsolutePath().normalize();
+      if (Files.notExists(fileStorageLocation)) {
+        Files.createDirectories(fileStorageLocation);
+      }
+      Path targetLocation = fileStorageLocation.resolve(fileName);
+      Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+      String location = targetLocation.toString();
+      return location.substring("/usr/nginx/huangshan".length());
+    } catch (Exception ex) {
+      throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+    }
+  }
+
+  public ArrayList<String> getFiles(String path) {
+    ArrayList<String> files = new ArrayList<String>();
+    File file = new File(path);
+    File[] tempList = file.listFiles();
+
+    for (int i = 0; i < tempList.length; i++) {
+      if (tempList[i].isFile()) {
+        String getPath = this.fileStorageProperties.getIpAddress() + tempList[i].toString().substring("/usr/nginx/huangshan".length());
+        files.add(getPath);
+      }
+      if (tempList[i].isDirectory()) {
+
+      }
+    }
+    return files;
   }
 
   public String storeFile(MultipartFile file) {
